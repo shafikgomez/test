@@ -1,0 +1,39 @@
+.remodal{ id:'js-modal-partner-code-modal', data: { remodal_options: 'hashTracking: false', remodal_id: "partner-code-modal"  } }
+  %button.remodal-close.u-fsTiny{ data: { remodal_action: 'close' } }
+  .u-textCenter
+    .u-mb1
+      %h2.u-lg-display2 Welcome Aboard Partner!
+    .Grid
+      .Grid-cell.u-lg-before1of8.u-lg-size6of8.u-lg-after1of8
+        #js-partner-code-modal-content
+          - if current_user.partner_codes.present?
+            %h4.u-mb05 Your Partner Code is
+            .u-textPrimary.u-text-Bold.u-fsMd.u-mb2
+              #{current_user.partner_codes.first.code}
+            %div.u-mb05.u-textLeft
+              Share this link with your contacts
+              %a.js-partner-clipboard-link.u-floatRight{ href: 'javascript:void(0)', data: { clipboard_text: partner_referral_url(partner_referrer: current_user.referral_code) } }
+                .u-alignMiddle.u-inlineBlock.u-fsMd
+                  .CalloutBox.CalloutBox--sm.u-fsTiny.js-copy-text Copy Link
+            %input.InputText.u-sizeFull.u-mb1{ type: 'text', readonly: 'true', value: partner_referral_url(partner_referrer: current_user.referral_code) }
+
+          - else
+            %h4.u-mb05 Create your unique code
+            .u-pv2
+              .Grid.Grid--alignMiddle.Grid--withGutter
+                .Grid-cell.u-lg-before1of6.u-lg-size4of6.u-lg-after1of6
+                  = render 'shared/v3/partner_code_form'
+    %a.Button.Button--secondary.Button--short.u-textCenter{ href: dashboard_path(type:'partner') } Go to Dashboard
+
+
+- content_for :javascripts do
+  :javascript
+    $(function() {
+      var partnerClipboard = new Clipboard('.js-partner-clipboard-link');
+      partnerClipboard.on('success', function(e) {
+        $(e.trigger).find('.js-copy-text').text('Copied!');
+        setTimeout(function() {
+          $(e.trigger).find('.js-copy-text').text('Copy Link');
+        }, 3000);
+      });
+    });
